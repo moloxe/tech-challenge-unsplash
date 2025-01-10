@@ -5,7 +5,10 @@ export const mapUnsplashPhotoToSearchBoxResult = (
   photo: UnsplashPhoto
 ): SearchBoxResult => {
   const date = new Date(photo.created_at);
-  const month = date.toLocaleString("default", { month: "long" });
+  let month = date.toLocaleString("en-US", {
+    month: "long",
+  });
+  month = month.charAt(0).toUpperCase() + month.slice(1);
   const day = date.getDate();
   const year = date.getFullYear();
   const tags = Object.keys(photo.topic_submissions).slice(0, 3);

@@ -23,7 +23,7 @@ const SearchResult: FC<Props> = ({ result }) => {
             <span className="opacity-80">by </span>
             <span className="font-bold">{result.author}</span>
           </p>
-          <p className="opacity-80">Taken {result.takenDate}</p>
+          <p className="opacity-80">Taken on {result.takenDate}</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {result.tags.map((tag) => (
