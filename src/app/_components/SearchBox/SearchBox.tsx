@@ -1,15 +1,23 @@
 "use client";
 
 import useSearchBox from "@/app/_hooks/useSearchBox";
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const SearchBox = () => {
-  const { setQuery } = useSearchBox();
+  const { query, setQuery } = useSearchBox();
   const [queryInput, setQueryInput] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setQueryInput(query);
+  }, [query]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setQuery(queryInput);
+    if (pathname !== "/") router.push("/");
   }
 
   return (

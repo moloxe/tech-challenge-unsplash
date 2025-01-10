@@ -21,10 +21,15 @@ export const SearchBoxProvider: FC<{
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadTrendingImages() {
+    async function loadImages() {
       try {
-        const newResults = await UnsplashService.getTrendingPhotos();
-        setResults(newResults);
+        if (query.length) {
+          const newResults = await UnsplashService.getPhotosByQuery(query);
+          setResults(newResults);
+        } else {
+          const newResults = await UnsplashService.getTrendingPhotos();
+          setResults(newResults);
+        }
         setError("");
       } catch (error) {
         setError(`Error: ${String(error)}`);
@@ -32,7 +37,7 @@ export const SearchBoxProvider: FC<{
         setLoading(false);
       }
     }
-    loadTrendingImages();
+    loadImages();
   }, [query]);
 
   return (

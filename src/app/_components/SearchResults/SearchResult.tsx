@@ -6,15 +6,15 @@ type Props = {
   result: SearchBoxResult;
 };
 
-const CONTAINER_WIDTH = "w-full max-w-[500px]";
+const CONTAINER_SIZE = "w-full max-w-[500px] min-h-[200px]";
 
 const SearchResult: FC<Props> = ({ result }) => {
   return (
-    <div className={`flex flex-col relative ${CONTAINER_WIDTH}`}>
+    <div className={`flex flex-col relative ${CONTAINER_SIZE}`}>
       <img
         src={result.imageUrl}
         alt={`Photo taken by ${result.author}`}
-        className={CONTAINER_WIDTH}
+        className={`${CONTAINER_SIZE} object-cover`}
       />
       <div className="absolute flex bottom-0 left-0 w-full bg-black bg-opacity-50 text-white p-2">
         <div className="flex-1 min-w-[160px] mt-auto">
