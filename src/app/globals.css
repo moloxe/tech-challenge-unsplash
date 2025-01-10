@@ -13,3 +13,9 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer components {
+  .max-w-app {
+    @apply max-w-[--max-w-screen];
+  }
+}
