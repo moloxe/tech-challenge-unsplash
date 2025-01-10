@@ -3,6 +3,7 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
 import { SearchBoxResult, SearchBox } from "../_types/search-box";
 import UnsplashService from "../_services/UnsplashService/UnsplashService";
+import { usePathname } from "next/navigation";
 
 const SearchBoxContext = createContext<SearchBox>({
   loading: true,
@@ -19,6 +20,13 @@ export const SearchBoxProvider: FC<{
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchBoxResult[]>([]);
   const [error, setError] = useState("");
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/") {
+      setQuery("");
+    }
+  }, [pathname]);
 
   useEffect(() => {
     async function loadImages() {
