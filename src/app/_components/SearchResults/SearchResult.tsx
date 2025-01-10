@@ -12,6 +12,7 @@ const SearchResult: FC<Props> = ({ result }) => {
   return (
     <div className={`flex flex-col relative ${CONTAINER_SIZE}`}>
       <img
+        loading="lazy"
         src={result.imageUrl}
         alt={`Photo taken by ${result.author}`}
         className={`${CONTAINER_SIZE} object-cover`}
