@@ -18,4 +18,13 @@ body {
   .max-w-app {
     @apply max-w-[--max-w-screen];
   }
+  .input-app {
+    @apply p-2 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full;
+  }
+  .button-app {
+    @apply p-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto py-2.5 text-center items-center inline-flex justify-center;
+  }
+  .label-app {
+    @apply text-neutral-700 text-lg font-extrabold;
+  }
 }
