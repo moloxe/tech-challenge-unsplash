@@ -8,7 +8,10 @@ const SearchResults = () => {
 
   if (loading)
     return (
-      <div className="relative flex-1 overflow-hidden mb-[-1rem]">
+      <div
+        className="relative flex-1 overflow-hidden mb-[-1rem]"
+        aria-label="Loading"
+      >
         <span className="sr-only">Loading</span>
         <div className="absolute flex flex-col gap-4">
           <div className="animate-pulse flex w-[600px] h-[400px] bg-gray-300 rounded-lg" />
@@ -22,9 +25,9 @@ const SearchResults = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <label className="label-app">
+      <div className="label-app" aria-label="Results">
         {Boolean(query) ? "Results" : "Trending Photos Right Now"}
-      </label>
+      </div>
       <div className="flex flex-col gap-4">
         {results.map((result) => (
           <SearchResult result={result} key={result.id} />
