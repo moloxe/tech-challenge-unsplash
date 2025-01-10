@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "./_components/Layout/Header";
 import "./globals.css";
+import { SearchBoxProvider } from "./_hooks/useSearchBox";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        {children}
+        <SearchBoxProvider>{children}</SearchBoxProvider>
       </body>
     </html>
   );
