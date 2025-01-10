@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --max-w-screen: 800px;
 }
 
 body {
