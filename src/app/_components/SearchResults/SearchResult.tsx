@@ -6,7 +6,7 @@ type Props = {
   result: SearchBoxResult;
 };
 
-const CONTAINER_SIZE = "w-full max-w-[500px] min-h-[300px]";
+const CONTAINER_SIZE = "w-full max-w-[600px] min-h-[300px]";
 
 const SearchResult: FC<Props> = ({ result }) => {
   return (
