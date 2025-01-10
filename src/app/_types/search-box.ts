@@ -2,7 +2,7 @@ export type SearchBoxResult = {
   id: string;
   author: string;
   takenDate: string;
-  categories: string[];
+  tags: string[];
   imageUrl: string;
 };
 
