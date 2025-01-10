@@ -31,6 +31,7 @@ export const SearchBoxProvider: FC<{
   useEffect(() => {
     async function loadImages() {
       try {
+        setLoading(true);
         if (query.length) {
           const newResults = await UnsplashService.getPhotosByQuery(query);
           setResults(newResults);
@@ -42,7 +43,8 @@ export const SearchBoxProvider: FC<{
       } catch (error) {
         setError(`Error: ${String(error)}`);
       } finally {
-        setLoading(false);
+        // Simulate a delay to show the loading skeleton
+        setTimeout(() => setLoading(false), 300);
       }
     }
     loadImages();
