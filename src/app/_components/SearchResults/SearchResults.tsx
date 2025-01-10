@@ -29,6 +29,11 @@ const SearchResults = () => {
         {Boolean(query) ? "Results" : "Trending Photos Right Now"}
       </div>
       <div className="flex flex-col gap-4">
+        {results.length === 0 && (
+          <div className="text-gray-500" aria-label="No results found">
+            No results found for <span className="font-semibold">{query}</span>
+          </div>
+        )}
         {results.map((result) => (
           <SearchResult result={result} key={result.id} />
         ))}
