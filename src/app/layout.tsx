@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SearchBoxProvider } from "./_hooks/useSearchBox";
 import Header from "./_components/Layout/Header";
 import "./globals.css";
-import { SearchBoxProvider } from "./_hooks/useSearchBox";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
