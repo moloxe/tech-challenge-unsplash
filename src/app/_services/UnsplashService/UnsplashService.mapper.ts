@@ -1,5 +1,5 @@
 import { SearchBoxResult } from "@/app/_types/search-box";
-import { UnsplashPhoto } from "./types";
+import { UnsplashPhoto } from "./UnsplashService.types";
 
 export const mapUnsplashPhotoToSearchBoxResult = (
   photo: UnsplashPhoto

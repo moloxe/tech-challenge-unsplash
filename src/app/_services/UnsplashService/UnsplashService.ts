@@ -1,4 +1,4 @@
-import { UnsplashPhoto } from "./types";
+import { UnsplashPhoto } from "./UnsplashService.types";
 import { mapUnsplashPhotoToSearchBoxResult } from "./UnsplashService.mapper";
 
 const IMAGES_PER_QUERY = 2;
