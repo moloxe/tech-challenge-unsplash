@@ -8,10 +8,11 @@ export const mapUnsplashPhotoToSearchBoxResult = (
   const month = date.toLocaleString("default", { month: "long" });
   const day = date.getDate();
   const year = date.getFullYear();
+  const tags = Object.keys(photo.topic_submissions).slice(0, 3);
   return {
     id: photo.id,
     author: photo.user.name,
-    tags: Object.keys(photo.topic_submissions),
+    tags,
     imageUrl: photo.urls.small,
     takenDate: `${month} ${day}, ${year}`,
   };
