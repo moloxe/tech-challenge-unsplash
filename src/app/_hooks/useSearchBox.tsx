@@ -18,12 +18,14 @@ const SearchBoxContext = createContext<SearchBox>({
   results: [],
   setQuery: () => {},
   error: "",
+  loadNextPage: () => {},
 });
 
 export const SearchBoxProvider: FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchBoxResult[]>([]);
   const [error, setError] = useState("");
@@ -45,8 +47,12 @@ export const SearchBoxProvider: FC<{
           loadingTimeout.current = null;
         }
         if (query.length > 0) {
-          const newResults = await UnsplashService.getPhotosByQuery(query);
-          setResults(newResults);
+          const newResults = await UnsplashService.getPhotosByQuery(
+            query,
+            page
+          );
+          if (page === 1) setResults(newResults);
+          else setResults((prevResults) => [...prevResults, ...newResults]);
         } else {
           const newResults = await UnsplashService.getTrendingPhotos();
           setResults(newResults);
@@ -60,7 +66,11 @@ export const SearchBoxProvider: FC<{
       }
     }
     loadImages();
-  }, [query]);
+  }, [query, page]);
+
+  function loadNextPage() {
+    setPage((prevPage) => prevPage + 1);
+  }
 
   return (
     <SearchBoxContext.Provider
@@ -70,6 +80,7 @@ export const SearchBoxProvider: FC<{
         results,
         setQuery,
         error,
+        loadNextPage,
       }}
     >
       {children}

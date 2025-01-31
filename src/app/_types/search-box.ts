@@ -9,6 +9,7 @@ export type SearchBoxResult = {
 export type SearchBox = {
   query: string;
   setQuery: (query: string) => void;
+  loadNextPage: () => void;
   loading: boolean;
   results: SearchBoxResult[];
   error: string;
