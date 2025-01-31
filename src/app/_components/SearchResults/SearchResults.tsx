@@ -5,49 +5,49 @@ import SearchResult from "./SearchResult";
 import { useEffect, useRef, useState } from "react";
 
 const SearchResults = () => {
-  const { results, query, loading, error, loadNextPage } = useSearchBox();
-  const [isLoadingNextPage, setIsLoadingNextPage] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  const { results, query, error, loadNextPage } = useSearchBox();
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const infiniteScrollRef = useRef<HTMLDivElement>(null);
+  const isLoadingNextPage = useRef(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    console.log("isLoadingNextPage", isLoadingNextPage);
-    if (!loading && isLoadingNextPage) {
-      console.log("scrolling to", scrollY);
-      window.scrollTo(0, scrollY);
-      setIsLoadingNextPage(false);
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
     }
-  }, [isLoadingNextPage, loading]);
+    if (query === "") return;
+    if (observerRef.current !== null) return;
 
-  function handleLoadResults() {
-    setScrollY(window.scrollY);
-    console.log("scrollY", window.scrollY);
-    loadNextPage();
-    setIsLoadingNextPage(true);
-  }
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+        } else {
+          setIsIntersecting(false);
+        }
+      },
+      { rootMargin: "100px" }
+    );
 
-  // const infiniteScrollRef = useRef<HTMLDivElement>(null);
-  // useEffect(() => {
-  //   // if (isFirstRender) {
-  //   //   setIsFirstRender(false);
-  //   //   return;
-  //   // }
-  //   let observer: any;
-  //   setTimeout(() => {
-  //     const options = {
-  //       root: document.querySelector("#infiniteScrollRef"),
-  //       rootMargin: "0px",
-  //       threshold: 0.1,
-  //     };
+    if (infiniteScrollRef.current) {
+      observerRef.current.observe(infiniteScrollRef.current);
+    }
+  }, [query]);
 
-  //     observer = new IntersectionObserver(() => {
-  //       console.log("Intersection observed");
-  //       loadNextPage();
-  //     }, options);
-  //   });
-  //   return () => {
-  //     observer.disconnect();
-  //   };
-  // }, []);
+  useEffect(() => {
+    if (isIntersecting) {
+      if (isLoadingNextPage.current) return;
+      isLoadingNextPage.current = true;
+
+      const scrollBefore = window.scrollY;
+      loadNextPage();
+
+      window.scrollTo(0, scrollBefore);
+
+      isLoadingNextPage.current = false;
+    }
+  }, [isIntersecting]);
 
   // if (loading)
   //   return (
@@ -80,10 +80,8 @@ const SearchResults = () => {
         {results.map((result) => (
           <SearchResult result={result} key={result.id} />
         ))}
-        {results.length > 0 && (
-          <button onClick={handleLoadResults} className="button-app">
-            Load results
-          </button>
+        {query !== "" && (
+          <div ref={infiniteScrollRef} className="w-4 h-4 bg-red-600"></div>
         )}
       </div>
     </div>
