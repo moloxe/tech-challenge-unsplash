@@ -1,7 +1,7 @@
 import { UnsplashPhoto } from "./UnsplashService.types";
 import { mapUnsplashPhotoToSearchBoxResult } from "./UnsplashService.mapper";
 
-const IMAGES_PER_QUERY = 10;
+const IMAGES_PER_QUERY = 4;
 
 const UnsplashService = {
   getTrendingPhotos: async () => {

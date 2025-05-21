@@ -24,7 +24,6 @@ const SearchResults = () => {
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-    if (query === "") return;
     if (observerRef.current !== null) return;
 
     observerRef.current = new IntersectionObserver(
@@ -35,7 +34,7 @@ const SearchResults = () => {
           setIsIntersecting(false);
         }
       },
-      { rootMargin: "100px" }
+      { rootMargin: "24px" }
     );
 
     if (infiniteScrollRef.current) {
@@ -49,13 +48,13 @@ const SearchResults = () => {
       isLoadingNextPage.current = true;
 
       const scrollBefore = window.scrollY;
-      if (!someBatchLoading) loadNextPage();
+      loadNextPage();
 
       window.scrollTo(0, scrollBefore);
 
       isLoadingNextPage.current = false;
     }
-  }, [someBatchLoading, isIntersecting]);
+  }, [isIntersecting]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -74,7 +73,7 @@ const SearchResults = () => {
         {!someBatchError && (
           <div
             ref={infiniteScrollRef}
-            className="relative flex-1 w-full h-[720px] "
+            className="flex-1 w-full h-[720px]"
             aria-label="Loading"
           >
             <span className="sr-only">Loading</span>
