@@ -12,9 +12,9 @@ const UnsplashService = {
     const searchBoxResults = data.map(mapUnsplashPhotoToSearchBoxResult);
     return searchBoxResults;
   },
-  getPhotosByQuery: async (query: string) => {
+  getPhotosByQuery: async (query: string, page: number) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_UNSPLASH_API_URL}/search/photos?client_id=${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}&query=${query}&per_page=${IMAGES_PER_QUERY}`
+      `${process.env.NEXT_PUBLIC_UNSPLASH_API_URL}/search/photos?client_id=${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}&query=${query}&per_page=${IMAGES_PER_QUERY}&page=${page}`
     );
     const data = (await res.json()).results as UnsplashPhoto[];
     const searchBoxResults = data.map(mapUnsplashPhotoToSearchBoxResult);
