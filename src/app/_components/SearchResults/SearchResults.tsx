@@ -9,7 +9,6 @@ const SearchResults = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const infiniteScrollRef = useRef<HTMLDivElement>(null);
   const isLoadingNextPage = useRef(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const someBatchLoading = useMemo(() => {
     return batches.some((batch) => batch.state === "loading");
@@ -20,25 +19,21 @@ const SearchResults = () => {
   }, [batches]);
 
   useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
+    if (!infiniteScrollRef.current) return;
+    const currentRef = infiniteScrollRef.current;
 
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsIntersecting(true);
-        } else {
-          setIsIntersecting(false);
-        }
+        setIsIntersecting(entry.isIntersecting);
       },
       { rootMargin: "24px" }
     );
 
-    if (infiniteScrollRef.current) {
-      observerRef.current.observe(infiniteScrollRef.current);
-    }
+    observer.observe(currentRef);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [query]);
 
   const loadNextPage = useRef(() => {});
@@ -53,7 +48,10 @@ const SearchResults = () => {
 
       isLoadingNextPage.current = true;
 
+      const scrollBefore = window.scrollY;
+      // TODO: This should be async
       loadNextPage.current();
+      window.scrollTo(0, scrollBefore);
 
       isLoadingNextPage.current = false;
     }
