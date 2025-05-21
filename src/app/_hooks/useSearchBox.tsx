@@ -60,10 +60,11 @@ export const SearchBoxProvider: FC<{
         setError("");
       } catch (error) {
         setError(`Error: ${String(error)}`);
-      } finally {
-        // Simulate a delay to show the loading skeleton
-        loadingTimeout.current = setTimeout(() => setLoading(false), 300);
       }
+      // finally {
+      //   // Simulate a delay to show the loading skeleton
+      //   loadingTimeout.current = setTimeout(() => setLoading(false), 300);
+      // }
     }
     loadImages();
   }, [query, page]);
