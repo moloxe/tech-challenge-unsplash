@@ -5,7 +5,7 @@ import SearchBatch from "./SearchBatch";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const SearchResults = () => {
-  const { batches, query, loadNextPage } = useSearchBox();
+  const { batches, query, loadNextPage: _loadNextPage } = useSearchBox();
   const [isIntersecting, setIsIntersecting] = useState(false);
   const infiniteScrollRef = useRef<HTMLDivElement>(null);
   const isLoadingNextPage = useRef(false);
@@ -24,7 +24,6 @@ const SearchResults = () => {
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-    if (observerRef.current !== null) return;
 
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
@@ -42,15 +41,19 @@ const SearchResults = () => {
     }
   }, [query]);
 
+  const loadNextPage = useRef(() => {});
+  useEffect(() => {
+    if (someBatchLoading) loadNextPage.current = () => {};
+    else loadNextPage.current = _loadNextPage;
+  }, [someBatchLoading]);
+
   useEffect(() => {
     if (isIntersecting) {
       if (isLoadingNextPage.current) return;
+
       isLoadingNextPage.current = true;
 
-      const scrollBefore = window.scrollY;
-      loadNextPage();
-
-      window.scrollTo(0, scrollBefore);
+      loadNextPage.current();
 
       isLoadingNextPage.current = false;
     }
