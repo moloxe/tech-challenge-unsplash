@@ -1,28 +1,31 @@
 "use client";
 
-import { createContext, FC, useContext, useEffect, useState } from "react";
-import { SearchBoxResult, SearchBox } from "../_types/search-box";
-import UnsplashService from "../_services/UnsplashService/UnsplashService";
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { SearchBox, SearchBoxBatch } from "../_types/search-box";
 import { usePathname } from "next/navigation";
 
 const SearchBoxContext = createContext<SearchBox>({
-  loading: true,
   query: "",
-  results: [],
   setQuery: () => {},
-  error: "",
   loadNextPage: () => {},
+  batches: [],
+  setBatchState: () => {},
 });
 
 export const SearchBoxProvider: FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<SearchBoxResult[]>([]);
-  const [error, setError] = useState("");
+  const [batches, setBatches] = useState<SearchBoxBatch[]>([]);
   const pathname = usePathname();
+  const isFirstLoadRef = useRef(true);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -31,47 +34,40 @@ export const SearchBoxProvider: FC<{
   }, [pathname]);
 
   useEffect(() => {
-    setResults([]);
+    if (isFirstLoadRef.current) {
+      const newBatch: SearchBoxBatch = {
+        page: batches.length + 1,
+        state: "loading",
+      };
+      setBatches([newBatch]);
+    } else {
+      setBatches([]);
+    }
   }, [query]);
 
-  useEffect(() => {
-    async function loadImages() {
-      try {
-        setLoading(true);
-        if (query.length > 0) {
-          const newResults = await UnsplashService.getPhotosByQuery(
-            query,
-            page
-          );
-          if (page === 1) setResults(newResults);
-          else setResults((prevResults) => [...prevResults, ...newResults]);
-        } else {
-          const newResults = await UnsplashService.getTrendingPhotos();
-          setResults(newResults);
-        }
-        setError("");
-      } catch (error) {
-        setError(`Error: ${String(error)}`);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadImages();
-  }, [query, page]);
-
   function loadNextPage() {
-    setPage((prevPage) => prevPage + 1);
+    setBatches((prev) => [
+      ...prev,
+      { page: prev.length + 1, state: "loading" },
+    ]);
+  }
+
+  function setBatchState(page: number, state: SearchBoxBatch["state"]) {
+    setBatches((prevBatches) =>
+      prevBatches.map((batch) =>
+        batch.page === page ? { ...batch, state } : batch
+      )
+    );
   }
 
   return (
     <SearchBoxContext.Provider
       value={{
-        loading,
         query,
-        results,
         setQuery,
-        error,
         loadNextPage,
+        batches,
+        setBatchState,
       }}
     >
       {children}
