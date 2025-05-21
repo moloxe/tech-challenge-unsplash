@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  FC,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, FC, useContext, useEffect, useState } from "react";
 import { SearchBoxResult, SearchBox } from "../_types/search-box";
 import UnsplashService from "../_services/UnsplashService/UnsplashService";
 import { usePathname } from "next/navigation";
@@ -29,7 +22,6 @@ export const SearchBoxProvider: FC<{
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchBoxResult[]>([]);
   const [error, setError] = useState("");
-  const loadingTimeout = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -39,13 +31,13 @@ export const SearchBoxProvider: FC<{
   }, [pathname]);
 
   useEffect(() => {
+    setResults([]);
+  }, [query]);
+
+  useEffect(() => {
     async function loadImages() {
       try {
         setLoading(true);
-        if (loadingTimeout.current) {
-          clearTimeout(loadingTimeout.current);
-          loadingTimeout.current = null;
-        }
         if (query.length > 0) {
           const newResults = await UnsplashService.getPhotosByQuery(
             query,
@@ -60,11 +52,9 @@ export const SearchBoxProvider: FC<{
         setError("");
       } catch (error) {
         setError(`Error: ${String(error)}`);
+      } finally {
+        setLoading(false);
       }
-      // finally {
-      //   // Simulate a delay to show the loading skeleton
-      //   loadingTimeout.current = setTimeout(() => setLoading(false), 300);
-      // }
     }
     loadImages();
   }, [query, page]);
