@@ -15,7 +15,7 @@ export type SearchBoxBatch = {
 
 export type SearchBox = {
   query: string;
-  setQuery: (query: string) => void;
+  makeSearch: (query?: string) => void;
   setBatchState: (page: number, state: SearchBatchState) => void;
   batches: SearchBoxBatch[];
   loadNextPage: () => void;

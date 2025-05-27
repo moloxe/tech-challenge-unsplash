@@ -34,7 +34,7 @@ const SearchResults = () => {
     return () => {
       observer.disconnect();
     };
-  }, [query]);
+  }, []);
 
   const loadNextPage = useRef(() => {});
   useEffect(() => {

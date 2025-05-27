@@ -9,9 +9,9 @@ type Props = {
 };
 
 const TagPage: FC<Props> = ({ tag }) => {
-  const { setQuery } = useSearchBox();
+  const { makeSearch } = useSearchBox();
   useEffect(() => {
-    setQuery(tag);
+    makeSearch(tag);
   }, []);
   return <SearchPage />;
 };

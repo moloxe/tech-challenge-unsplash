@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const SearchBox = () => {
-  const { query, setQuery } = useSearchBox();
+  const { query, makeSearch } = useSearchBox();
   const [queryInput, setQueryInput] = useState("");
   const router = useRouter();
   const pathname = usePathname();
@@ -16,7 +16,7 @@ const SearchBox = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setQuery(queryInput);
+    makeSearch(queryInput);
     if (pathname !== "/") router.push("/");
   }
 

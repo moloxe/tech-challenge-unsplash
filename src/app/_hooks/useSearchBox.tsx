@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 
 const SearchBoxContext = createContext<SearchBox>({
   query: "",
-  setQuery: () => {},
+  makeSearch: () => {},
   loadNextPage: () => {},
   batches: [],
   setBatchState: () => {},
@@ -25,7 +25,7 @@ export const SearchBoxProvider: FC<{
   const [query, setQuery] = useState("");
   const [batches, setBatches] = useState<SearchBoxBatch[]>([]);
   const pathname = usePathname();
-  const isFirstLoadRef = useRef(true);
+  const isFirstSearch = useRef(true);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -33,19 +33,22 @@ export const SearchBoxProvider: FC<{
     }
   }, [pathname]);
 
-  useEffect(() => {
-    if (isFirstLoadRef.current) {
-      const newBatch: SearchBoxBatch = {
-        page: batches.length + 1,
-        state: "loading",
-      };
-      setBatches([newBatch]);
-    } else {
-      setBatches([]);
+  function makeSearch(newQuery?: string) {
+    let page = batches.length + 1;
+    if (newQuery !== query) {
+      page = 1;
     }
-  }, [query]);
+    const newBatch: SearchBoxBatch = {
+      page,
+      state: "loading",
+    };
+    setBatches([newBatch]);
+    if (newQuery) setQuery(newQuery);
+    isFirstSearch.current = false;
+  }
 
   function loadNextPage() {
+    if (isFirstSearch.current) return;
     setBatches((prev) => [
       ...prev,
       { page: prev.length + 1, state: "loading" },
@@ -64,7 +67,7 @@ export const SearchBoxProvider: FC<{
     <SearchBoxContext.Provider
       value={{
         query,
-        setQuery,
+        makeSearch,
         loadNextPage,
         batches,
         setBatchState,
