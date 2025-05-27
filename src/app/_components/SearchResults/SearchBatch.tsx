@@ -17,7 +17,8 @@ const SearchBatch: FC<Props> = ({ batch }) => {
 
   useEffect(() => {
     async function loadImages() {
-      const { page } = batch;
+      const { page, state } = batch;
+      if (state !== "loading") return;
       try {
         setBatchState(page, "loading");
         if (query.length > 0) {
