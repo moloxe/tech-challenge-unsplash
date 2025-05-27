@@ -1,48 +1,56 @@
 "use client";
 
 import useSearchBox from "@/app/_hooks/useSearchBox";
-import SearchResult from "./SearchResult";
-import { useEffect, useRef, useState } from "react";
+import SearchBatch from "./SearchBatch";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const SearchResults = () => {
-  const { results, query, error, loadNextPage, loading } = useSearchBox();
+  const { batches, query, loadNextPage: _loadNextPage } = useSearchBox();
   const [isIntersecting, setIsIntersecting] = useState(false);
   const infiniteScrollRef = useRef<HTMLDivElement>(null);
   const isLoadingNextPage = useRef(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const someBatchLoading = useMemo(() => {
+    return batches.some((batch) => batch.state === "loading");
+  }, [batches]);
+
+  const someBatchError = useMemo(() => {
+    return batches.some((batch) => batch.state === "error");
+  }, [batches]);
 
   useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-    if (query === "") return;
-    if (observerRef.current !== null) return;
+    if (!infiniteScrollRef.current) return;
+    const currentRef = infiniteScrollRef.current;
 
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsIntersecting(true);
-        } else {
-          setIsIntersecting(false);
-        }
+        setIsIntersecting(entry.isIntersecting);
       },
-      { rootMargin: "100px" }
+      { rootMargin: "24px" }
     );
 
-    if (infiniteScrollRef.current) {
-      observerRef.current.observe(infiniteScrollRef.current);
-    }
-  }, [query]);
+    observer.observe(currentRef);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const loadNextPage = useRef(() => {});
+  useEffect(() => {
+    if (someBatchLoading) loadNextPage.current = () => {};
+    else loadNextPage.current = _loadNextPage;
+  }, [someBatchLoading]);
 
   useEffect(() => {
     if (isIntersecting) {
       if (isLoadingNextPage.current) return;
+
       isLoadingNextPage.current = true;
 
       const scrollBefore = window.scrollY;
-      loadNextPage();
-
+      // TODO: This should be async
+      loadNextPage.current();
       window.scrollTo(0, scrollBefore);
 
       isLoadingNextPage.current = false;
@@ -55,26 +63,25 @@ const SearchResults = () => {
         {Boolean(query) ? "Results" : "Trending Photos Right Now"}
       </div>
       <div className="flex flex-col gap-4 relative">
-        {!loading && results.length === 0 && (
+        {!someBatchLoading && batches.length === 0 && (
           <div className="text-gray-500" aria-label="No results found">
             No results found for <span className="font-semibold">{query}</span>
           </div>
         )}
-        {results.map((result) => (
-          <SearchResult result={result} key={result.id} />
+        {batches.map((batch, index) => (
+          <SearchBatch batch={batch} key={`${query}-${batch.page}-${index}`} />
         ))}
-        {error && <div className="text-red-500">{error}</div>}
-        {!error && (
+        {!someBatchError && (
           <div
             ref={infiniteScrollRef}
-            className="relative flex-1 w-full h-[720px] "
+            className="flex-1 w-full h-[720px]"
             aria-label="Loading"
           >
             <span className="sr-only">Loading</span>
-            <div className="absolute flex flex-col gap-4">
-              <div className="animate-pulse flex w-[600px] h-[200px] bg-gray-300 rounded-lg" />
-              <div className="animate-pulse flex w-[600px] h-[100px] bg-gray-300 rounded-lg" />
-              <div className="animate-pulse flex w-[600px] h-[400px] bg-gray-300 rounded-lg" />
+            <div className="flex flex-col gap-4 w-full">
+              <div className="animate-pulse flex w-full max-w-[600px] h-[150px] bg-gray-300 rounded-lg" />
+              <div className="animate-pulse flex w-full max-w-[600px] h-[200px] bg-gray-300 rounded-lg" />
+              <div className="animate-pulse flex w-full max-w-[600px] h-[400px] bg-gray-300 rounded-lg" />
             </div>
           </div>
         )}

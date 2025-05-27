@@ -4,6 +4,27 @@ import SearchPage from "./SearchPage";
 import { AppRouterContextProviderMock } from "@/app/_tests/app-router.mock";
 import { SearchBoxProvider } from "@/app/_hooks/useSearchBox";
 
+global.IntersectionObserver = class MockIntersectionObserver {
+  readonly root: Element | Document | null = null;
+  readonly rootMargin: string = "";
+  readonly thresholds: ReadonlyArray<number> = [];
+
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) {}
+
+  disconnect(): void {}
+
+  observe(target: Element): void {}
+
+  takeRecords(): any {
+    return [];
+  }
+
+  unobserve(target: Element): void {}
+};
+
 describe("SearchPage", () => {
   test("load trending result", async () => {
     const push = vitest.fn();
