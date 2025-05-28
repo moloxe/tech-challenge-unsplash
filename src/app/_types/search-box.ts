@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type SearchBoxResult = {
   id: string;
   author: string;
@@ -15,6 +17,10 @@ export type SearchBoxBatch = {
 
 export type SearchBox = {
   query: string;
+  results: string[];
+  setResults: Dispatch<SetStateAction<string[]>>;
+  modalIndex?: number;
+  setModalIndex: Dispatch<SetStateAction<number | undefined>>;
   makeSearch: (query?: string) => void;
   setBatchState: (page: number, state: SearchBatchState) => void;
   batches: SearchBoxBatch[];

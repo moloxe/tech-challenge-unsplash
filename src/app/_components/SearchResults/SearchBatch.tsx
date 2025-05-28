@@ -11,7 +11,12 @@ type Props = {
 const CONTAINER_SIZE = "w-full max-w-[600px] min-h-[300px]";
 
 const SearchBatch: FC<Props> = ({ batch }) => {
-  const { query, setBatchState } = useSearchBox();
+  const {
+    query,
+    setBatchState,
+    setResults: setAllResults,
+    setModalIndex,
+  } = useSearchBox();
   const [results, setResults] = useState<SearchBoxResult[]>([]);
   const [error, setError] = useState("");
 
@@ -26,9 +31,17 @@ const SearchBatch: FC<Props> = ({ batch }) => {
             query,
             page
           );
+          setAllResults((prevResults) => [
+            ...prevResults,
+            ...newResults.map((result) => result.imageUrl),
+          ]);
           setResults(newResults);
         } else {
           const newResults = await UnsplashService.getTrendingPhotos();
+          setAllResults((prevResults) => [
+            ...prevResults,
+            ...newResults.map((result) => result.imageUrl),
+          ]);
           setResults(newResults);
         }
         setBatchState(page, "success");
@@ -41,10 +54,14 @@ const SearchBatch: FC<Props> = ({ batch }) => {
     loadImages();
   }, []);
 
+  function loadModal(index: number) {
+    setModalIndex(index);
+  }
+
   return (
     <>
       {!error &&
-        results.map((result) => (
+        results.map((result, index) => (
           <div
             className={`flex flex-col relative ${CONTAINER_SIZE}`}
             key={result.id}
@@ -53,7 +70,9 @@ const SearchBatch: FC<Props> = ({ batch }) => {
               loading="lazy"
               src={result.imageUrl}
               alt={`Photo taken by ${result.author}`}
-              className={`${CONTAINER_SIZE} object-cover`}
+              className={`${CONTAINER_SIZE} object-cover cursor-pointer`}
+              onClick={() => loadModal(index)}
+              aria-label="Click to view full image"
             />
             <div className="absolute flex bottom-0 left-0 w-full bg-black bg-opacity-50 text-white p-2">
               <div className="flex-1 min-w-[160px] mt-auto">

@@ -14,9 +14,12 @@ import { usePathname } from "next/navigation";
 const SearchBoxContext = createContext<SearchBox>({
   query: "",
   makeSearch: () => {},
+  setModalIndex: () => {},
   loadNextPage: () => {},
   batches: [],
   setBatchState: () => {},
+  results: [],
+  setResults: () => {},
 });
 
 export const SearchBoxProvider: FC<{
@@ -26,6 +29,8 @@ export const SearchBoxProvider: FC<{
   const [batches, setBatches] = useState<SearchBoxBatch[]>([]);
   const pathname = usePathname();
   const isFirstSearch = useRef(true);
+  const [results, setResults] = useState<string[]>([]);
+  const [modalIndex, setModalIndex] = useState<number | undefined>();
 
   useEffect(() => {
     if (pathname === "/") {
@@ -37,6 +42,7 @@ export const SearchBoxProvider: FC<{
     let page = batches.length + 1;
     if (newQuery !== query) {
       page = 1;
+      setResults([]);
     }
     const newBatch: SearchBoxBatch = {
       page,
@@ -71,6 +77,10 @@ export const SearchBoxProvider: FC<{
         loadNextPage,
         batches,
         setBatchState,
+        results,
+        setResults,
+        modalIndex,
+        setModalIndex,
       }}
     >
       {children}
